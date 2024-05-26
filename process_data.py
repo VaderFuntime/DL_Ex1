@@ -25,7 +25,10 @@ def load_data_single_file(filepath, flag):
     with open(filepath) as file:
         peptides = file.read().splitlines()
         X = np.array([peptide_to_input_vec(peptide) for peptide in peptides])
-    Y = np.ones(len(X)) if flag else np.zeros(len(X))
+    Y = np.array([[1, 0]] * len(X)) if flag else np.array([[0, 1]] * len(X))
+    # convert numpy arrays to float
+    X = X.astype(np.float32)
+    Y = Y.astype(np.float32)
     return X, Y
 
 
@@ -43,6 +46,19 @@ def load_both_files():
 
 def split_data(X, Y):
     return train_test_split(X, Y, test_size=0.1, random_state=42)
+
+
+def load_spike_data():
+    with open("data/spike.txt") as spike_file:
+        file_text = spike_file.read()
+
+    peptides = []
+    for i in range(len(file_text) - PEPTIDE_LEN):
+        peptides.append(file_text[i: i + PEPTIDE_LEN])
+
+    X = np.array([peptide_to_input_vec(peptide) for peptide in peptides])
+    X = X.astype(np.float32)
+    return peptides, X
 
 
 def main():
