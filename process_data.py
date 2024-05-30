@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.model_selection import train_test_split
+import sklearn.model_selection
 import pickle
 
 NUM_AMINO_ACIDS = 20
@@ -7,6 +7,11 @@ PEPTIDE_LEN = 9
 
 
 def amino_to_vec(amino: str):
+    """
+    Convert an amino acid to a one-hot vector
+    :param amino:
+    :return:
+    """
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
     aa_to_index = {aa: i for i, aa in enumerate(amino_acids)}
 
@@ -16,16 +21,27 @@ def amino_to_vec(amino: str):
 
 
 def peptide_to_input_vec(peptide: str):
+    """
+    Convert a peptide to a one-hot vector
+    :param peptide:
+    :return:
+    """
     if len(peptide) != PEPTIDE_LEN:
         raise ValueError("Wrong peptide length")
     return np.concatenate([amino_to_vec(amino) for amino in peptide])
 
 
 def load_data_single_file(filepath, flag):
+    """
+    Load the data from a single file
+    :param filepath:
+    :param flag:
+    :return:
+    """
     with open(filepath) as file:
         peptides = file.read().splitlines()
         X = np.array([peptide_to_input_vec(peptide) for peptide in peptides])
-    Y = np.array([[1, 0]] * len(X)) if flag else np.array([[0, 1]] * len(X))
+    Y = np.ones(len(X)) if flag else np.zeros(len(X))  # Assign 1 for positive and 0 for negative
     # convert numpy arrays to float
     X = X.astype(np.float32)
     Y = Y.astype(np.float32)
@@ -45,10 +61,14 @@ def load_both_files():
 
 
 def split_data(X, Y):
-    return train_test_split(X, Y, test_size=0.1, random_state=42)
+    return sklearn.model_selection.train_test_split(X, Y, test_size=0.1, random_state=42)
 
 
 def load_spike_data():
+    """
+    Load the spike data and return the peptides and the input vectors
+    :return:
+    """
     with open("data/spike.txt") as spike_file:
         file_text = spike_file.read()
 
