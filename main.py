@@ -186,16 +186,16 @@ def get_top_3_peptides(model):
         y_pred = model(torch.tensor(X).float()).squeeze()
         y_pred = y_pred[:, 1].numpy()
         top_3_indices = np.argsort(y_pred)[::-1][:3]
+        print("Top 3 Peptides:")
         for i in top_3_indices:
-            print(peptides[i], y_pred[i])
-
+            print(f"Peptide: {peptides[i]}, Probability: {y_pred[i] * 100:.2f}%")
 
 def main():
-    train_loss, test_loss, model = create_and_train_model()
-    plot_loss(train_loss, test_loss)
-    print_test_metrics(model)
-    # model = torch.load("my_model.pickle")
-    # get_top_3_peptides(model)
+    # train_loss, test_loss, model = create_and_train_model()
+    # plot_loss(train_loss, test_loss)
+    # print_test_metrics(model)
+    model = torch.load("my_model.pickle")
+    get_top_3_peptides(model)
 
 
 if __name__ == "__main__":
